@@ -4,7 +4,11 @@ import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -23,47 +27,44 @@ import com.example.android5homework2mc7.R
 
 @Composable
 fun DetailScreen(
-    title: String,
-    description: String,
-    imageResId: Int
+    title: String, // Заголовок экрана
+    description: String, // Описание места
+    imageResId: Int, // Ресурс изображения
+    onBackClick: () -> Unit, // Функция для обработки нажатия кнопки "Назад"
 ) {
     Column(
         modifier = Modifier
-            .fillMaxSize()
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+            .fillMaxSize() // Заполняет всю доступную область
+            .background(Color.White), // Белый фон
+        horizontalAlignment = Alignment.CenterHorizontally, // Центрирует содержимое по горизонтали
+        verticalArrangement = Arrangement.Center // Центрирует содержимое по вертикали
     ) {
         // Отображение изображения в Card
         Card(
             modifier = Modifier
-                .padding(bottom = 20.dp)
-                .size(200.dp),
-            shape = CircleShape,
-            elevation = CardDefaults.cardElevation(
-                defaultElevation = 10.dp,
-                pressedElevation = 15.dp,
-                focusedElevation = 20.dp
-            ),
-            border = BorderStroke(3.dp, Color.Black)
+                .padding(bottom = 20.dp) // Отступ снизу
+                .size(200.dp), // Размер карточки
+            shape = CircleShape, // Форма карточки - круглая
+            elevation = CardDefaults.cardElevation(10.dp), // Эффект тени
+            border = BorderStroke(3.dp, Color.Black) // Черная рамка вокруг карточки
         ) {
             Image(
-                contentScale = ContentScale.Crop,
-                painter = painterResource(id = imageResId),
-                contentDescription = stringResource(R.string.anime_person)
+                contentScale = ContentScale.Crop, // Масштабирование изображения
+                painter = painterResource(id = imageResId), // Ресурс изображения
+                contentDescription = stringResource(R.string.anime_person) // Описание изображения для доступности
             )
         }
 
         // Логирование заголовка для отладки
-        Log.e("DetailScreen", "DetailScreen: $title")
+        Log.e("DetailScreen", "DetailScreen: $title") // Выводит заголовок в лог для отладки
 
         // Отображение заголовка и описания
-        Text(text = title, color = Color.Black)
-        Text(text = description, color = Color.Gray)
+        Text(text = title, color = Color.Black) // Заголовок в черном цвете
+        Text(text = description, color = Color.Gray) // Описание в сером цвете
 
         // Кнопка для возвращения на главный экран
-        Button(onClick = { /* Здесь можно добавить логику для возврата */ }) {
-            Text(text = "Back to Main Screen")
+        Button(onClick = onBackClick) { // Обработчик нажатия кнопки
+            Text(text = "Back to Main Screen") // Текст кнопки
         }
     }
 }
@@ -71,9 +72,11 @@ fun DetailScreen(
 @Preview
 @Composable
 fun DetailScreenPreview() {
+    // Предпросмотр экрана деталей с примерными данными
     DetailScreen(
-        title = "Example Title",
-        description = "This is an example description for the detail screen.",
-        imageResId = R.drawable.anime_person // Замените на свой ресурс drawable
+        title = "Example Title", // Пример заголовка
+        description = "This is an example description for the detail screen.", // Пример описания
+        imageResId = R.drawable.anime_person, // Ресурс изображения для предпросмотра
+        onBackClick = {} // Пустая функция для обработки нажатия кнопки в предпросмотре
     )
 }

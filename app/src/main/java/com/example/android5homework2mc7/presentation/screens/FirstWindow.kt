@@ -1,4 +1,3 @@
-package com.example.jetpackcompose
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -24,34 +23,33 @@ import com.example.android5homework2mc7.R
 
 @Composable
 fun MainScreen() {
-    var showDetailScreen by remember { mutableStateOf(false) }
-    var selectedPlace by remember { mutableStateOf<PlaceDetails?>(null) }
+    var showDetailScreen by remember { mutableStateOf(false) } // Состояние для показа детального экрана
+    var selectedPlace by remember { mutableStateOf<PlaceDetails?>(null) } // Выбранное место для показа деталей
 
+    // Проверка, нужно ли показывать детальный экран
     if (showDetailScreen && selectedPlace != null) {
         DetailScreen(
             title = selectedPlace!!.title,
             location = selectedPlace!!.location,
             imageResId = selectedPlace!!.imageResId,
-            onBackClick = {
-                showDetailScreen = false
-                selectedPlace = null
-            }
+            onBackClick = { showDetailScreen = false; selectedPlace = null } // Закрыть детальный экран
         )
     } else {
+        // Основной экран
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White) // Белый фон
                 .padding(24.dp) // Увеличенные отступы
         ) {
-            Header()
-            SearchBar()
-            PopularPlacesSection(onPlaceCardClick = { title, location, imageResId ->
-                selectedPlace = PlaceDetails(title, location, imageResId)
-                showDetailScreen = true
-            })
-            Spacer(modifier = Modifier.weight(1f))
-            BottomNavigationBar()
+            Header() // Заголовок
+            SearchBar() // Поисковая строка
+            PopularPlacesSection { title, location, imageResId ->
+                selectedPlace = PlaceDetails(title, location, imageResId) // Установка выбранного места
+                showDetailScreen = true // Показать детальный экран
+            }
+            Spacer(modifier = Modifier.weight(1f)) // Заполнитель для равномерного распределения пространства
+            BottomNavigationBar() // Нижняя навигационная панель
         }
     }
 }
@@ -59,58 +57,49 @@ fun MainScreen() {
 @Composable
 fun Header() {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = 24.dp), // Отступ сверху
+        modifier = Modifier.fillMaxWidth().padding(top = 24.dp), // Заголовок с отступом сверху
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.SpaceBetween
     ) {
         Column {
-            Text("Hi, David 👋", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.Black) // Изменен цвет текста
-            Text("Explore the world", fontSize = 16.sp, color = Color.Gray)
+            Text("Hi, David 👋", fontSize = 28.sp, fontWeight = FontWeight.Bold, color = Color.Black) // Приветствие
+            Text("Explore the world", fontSize = 16.sp, color = Color.Gray) // Подзаголовок
         }
+        // Изображение профиля
         Image(
             painter = painterResource(id = R.drawable.profile_image),
             contentDescription = null,
-            modifier = Modifier
-                .size(45.dp) // Увеличенный размер изображения профиля
-                .clip(CircleShape)
-                .background(Color.LightGray)
+            modifier = Modifier.size(45.dp).clip(CircleShape).background(Color.LightGray) // Круглая форма изображения
         )
     }
 }
 
 @Composable
 fun SearchBar() {
-    var searchQuery by remember { mutableStateOf("") }
+    var searchQuery by remember { mutableStateOf("") } // Состояние для хранения поискового запроса
 
+    // Поле для ввода поискового запроса
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 24.dp) // Увеличенный отступ
+        modifier = Modifier.fillMaxWidth()
+            .padding(vertical = 24.dp)
             .background(Color.LightGray, RoundedCornerShape(12.dp)), // Закругление углов
         contentAlignment = Alignment.CenterStart
     ) {
         BasicTextField(
             value = searchQuery,
-            onValueChange = { searchQuery = it },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(18.dp), // Отступ внутри
+            onValueChange = { searchQuery = it }, // Обновление состояния при изменении текста
+            modifier = Modifier.fillMaxWidth().padding(18.dp), // Отступы внутри поля
             decorationBox = { innerTextField ->
-                if (searchQuery.isEmpty()) {
-                    Text("Search places", color = Color.Gray)
-                }
+                if (searchQuery.isEmpty()) Text("Search places", color = Color.Gray) // Подсказка, если поле пустое
                 innerTextField()
             }
         )
+        // Иконка поиска
         Icon(
             painter = painterResource(id = R.drawable.ic_search),
             contentDescription = null,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 16.dp),
-            tint = Color.Black // Изменен цвет иконки
+            modifier = Modifier.align(Alignment.CenterEnd).padding(end = 16.dp),
+            tint = Color.Black // Цвет иконки
         )
     }
 }
@@ -118,165 +107,102 @@ fun SearchBar() {
 @Composable
 fun PopularPlacesSection(onPlaceCardClick: (String, String, Int) -> Unit) {
     Column {
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceBetween
-        ) {
-            Text("Popular places", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black) // Изменен цвет текста
-            Text("View all", color = Color.Gray)
+        // Заголовок секции популярных мест
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
+            Text("Popular places", fontSize = 18.sp, fontWeight = FontWeight.Bold, color = Color.Black)
+            Text("View all", color = Color.Gray) // Ссылка на просмотр всех мест
         }
-
         Spacer(modifier = Modifier.height(24.dp))
 
         // Вкладки "Most Viewed", "Nearby", "Latest"
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.SpaceAround
-        ) {
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(50)) // Закругление кнопок
-                    .background(Color.Black)
-                    .padding(horizontal = 24.dp, vertical = 8.dp) // Отступы внутри кнопок
-            ) {
-                Text("Most Viewed", color = Color.White)
-            }
-
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(50))
-                    .background(Color.LightGray)
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
-            ) {
-                Text("Nearby", color = Color.Gray)
-            }
-
-            Box(
-                modifier = Modifier
-                    .clip(RoundedCornerShape(50))
-                    .background(Color.LightGray)
-                    .padding(horizontal = 24.dp, vertical = 8.dp)
-            ) {
-                Text("Latest", color = Color.Gray)
+        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceAround) {
+            listOf("Most Viewed", "Nearby", "Latest").forEach { text ->
+                Box(
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(50)) // Закругление углов вкладок
+                        .background(if (text == "Most Viewed") Color.Black else Color.LightGray)
+                        .padding(horizontal = 24.dp, vertical = 8.dp) // Отступы внутри вкладок
+                ) {
+                    Text(text, color = if (text == "Most Viewed") Color.White else Color.Gray) // Цвет текста в зависимости от вкладки
+                }
             }
         }
 
         Spacer(modifier = Modifier.height(24.dp))
 
+        // Карточки популярных мест
         Row(modifier = Modifier.fillMaxWidth()) {
-            PlaceCard(
-                title = "Mount Fuji, Tokyo",
-                location = "Tokyo, Japan",
-                imageRes = R.drawable.mount_fuji,
-                rating = "4.8",
-                onClick = { onPlaceCardClick("Mount Fuji, Tokyo", "Tokyo, Japan", R.drawable.mount_fuji) }
-            )
+            PlaceCard("Mount Fuji, Tokyo", "Tokyo, Japan", R.drawable.mount_fuji, "4.8") {
+                onPlaceCardClick("Mount Fuji, Tokyo", "Tokyo, Japan", R.drawable.mount_fuji)
+            }
             Spacer(modifier = Modifier.width(16.dp))
-            PlaceCard(
-                title = "Andes, South America",
-                location = "South, America",
-                imageRes = R.drawable.andes,
-                rating = "4.7",
-                onClick = { onPlaceCardClick("Andes, South America", "South, America", R.drawable.andes) }
-            )
+            PlaceCard("Andes, South America", "South, America", R.drawable.andes, "4.7") {
+                onPlaceCardClick("Andes, South America", "South, America", R.drawable.andes)
+            }
         }
     }
 }
 
 @Composable
 fun PlaceCard(title: String, location: String, imageRes: Int, rating: String, onClick: () -> Unit) {
+    // Карточка места
     Column(
-        modifier = Modifier
-            .width(170.dp) // Ширина карточек
-            .clickable(onClick = onClick)
+        modifier = Modifier.width(170.dp).clickable(onClick = onClick) // Обработка нажатия на карточку
     ) {
+        // Изображение места
         Image(
             painter = painterResource(id = imageRes),
             contentDescription = null,
-            modifier = Modifier
-                .height(220.dp) // Высота изображения
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp)), // Закругленные углы
-            contentScale = ContentScale.Crop
+            modifier = Modifier.height(220.dp).fillMaxWidth().clip(RoundedCornerShape(20.dp)),
+            contentScale = ContentScale.Crop // Масштабирование изображения
         )
-        Text(title, fontWeight = FontWeight.Bold, color = Color.Black, modifier = Modifier.padding(top = 8.dp)) // Изменен цвет текста
-        Text(location, color = Color.Gray)
-        Text("⭐ $rating", color = Color.Gray, fontSize = 12.sp)
+        Text(title, fontWeight = FontWeight.Bold, color = Color.Black, modifier = Modifier.padding(top = 8.dp)) // Название места
+        Text(location, color = Color.Gray) // Локация места
+        Text("⭐ $rating", color = Color.Gray, fontSize = 12.sp) // Рейтинг места
     }
 }
 
 @Composable
 fun BottomNavigationBar() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 24.dp),
-        horizontalArrangement = Arrangement.SpaceAround
-    ) {
-        Icon(
-            painter = painterResource(id = R.drawable.ic_home),
-            contentDescription = "Home",
-            modifier = Modifier.size(24.dp) // Увеличенный размер иконок
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_clock),
-            contentDescription = "Recent",
-            modifier = Modifier.size(24.dp)
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_heart),
-            contentDescription = "Favorites",
-            modifier = Modifier.size(24.dp)
-        )
-        Icon(
-            painter = painterResource(id = R.drawable.ic_profile),
-            contentDescription = "Profile",
-            modifier = Modifier.size(24.dp)
-        )
+    // Нижняя навигационная панель
+    Row(modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp), horizontalArrangement = Arrangement.SpaceAround) {
+        // Иконки навигации
+        listOf(R.drawable.ic_home, R.drawable.ic_clock, R.drawable.ic_heart, R.drawable.ic_profile).forEach { icon ->
+            Icon(painter = painterResource(id = icon), contentDescription = null, modifier = Modifier.size(24.dp)) // Размер иконок
+        }
     }
 }
 
 @Composable
 fun DetailScreen(title: String, location: String, imageResId: Int, onBackClick: () -> Unit) {
+    // Экран с деталями о месте
     Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp),
+        modifier = Modifier.fillMaxSize().padding(24.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
+        // Изображение места на детальном экране
         Image(
             painter = painterResource(id = imageResId),
             contentDescription = null,
-            modifier = Modifier
-                .height(240.dp)
-                .fillMaxWidth()
-                .clip(RoundedCornerShape(20.dp)),
+            modifier = Modifier.height(240.dp).fillMaxWidth().clip(RoundedCornerShape(20.dp)),
             contentScale = ContentScale.Crop
         )
         Spacer(modifier = Modifier.height(24.dp))
-        Text(text = title, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black) // Изменен цвет текста
+        Text(text = title, fontSize = 24.sp, fontWeight = FontWeight.Bold, color = Color.Black) // Заголовок
         Spacer(modifier = Modifier.height(8.dp))
-        Text(text = location, fontSize = 18.sp, color = Color.Gray)
+        Text(text = location, fontSize = 18.sp, color = Color.Gray) // Локация
         Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = "Back",
-            modifier = Modifier
-                .clickable(onClick = onBackClick)
-                .padding(16.dp)
-        )
+        // Кнопка "Назад"
+        Text(text = "Back", modifier = Modifier.clickable(onClick = onBackClick).padding(16.dp))
     }
 }
 
-data class PlaceDetails(
-    val title: String,
-    val location: String,
-    val imageResId: Int
-)
+// Данные о месте
+data class PlaceDetails(val title: String, val location: String, val imageResId: Int)
 
 @Preview
 @Composable
 fun FirstScreen() {
-    MainScreen()
+    MainScreen() // Предпросмотр основного экрана
 }
