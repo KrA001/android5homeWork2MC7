@@ -1,73 +1,48 @@
 package com.example.android5homework2mc7.presentation.activity
 
+import FirstScreen
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.android5homework2mc7.R
-import com.example.jetpackcompose.FirstScreen
+import com.example.android5homework2mc7.presentation.screens.PlaceDetailScreen
+import com.example.android5homework2mc7.presentation.screens.ScreenNames
+import com.example.android5homework2mc7.presentation.screens.SplashScreen
 import kotlinx.coroutines.delay
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
-        setContent {
-            SplashScreenApp()
-        }
+        super.onCreate(savedInstanceState)  // Вызов родительского метода для инициализации
+        enableEdgeToEdge()  // Включение режима края до края
+        setContent { NavController() }  // Установка NavController как содержимого
     }
 }
 
 @Composable
-fun SplashScreenApp() {
-    var showSplash by remember { mutableStateOf(true) }
+fun NavController() {
+    var currentScreen by remember { mutableStateOf(ScreenNames.SPLASH_SCREEN) }  // Хранение текущего экрана
+    var selectedPlaceDetails by remember { mutableStateOf<Pair<String, Int>?>(null) }  // Хранение деталей места
 
-    // Показываем SplashScreen на 3 секунды
     LaunchedEffect(Unit) {
-        delay(3000)
-        showSplash = false
+        delay(3000)  // Задержка на 3 секунды для SplashScreen
+        currentScreen = ScreenNames.FIRST_SCREEN  // Переход на первый экран
     }
 
-    if (showSplash) {
-        // SplashScreen
-        SplashScreen()
-    } else {
-        // Основной экран после SplashScreen
-       FirstScreen()
-    }
-}
+    when (currentScreen) {
+        ScreenNames.SPLASH_SCREEN -> SplashScreen()  // Отображение SplashScreen
+        ScreenNames.FIRST_SCREEN -> FirstScreen { placeTitle, placeImageRes ->
+            selectedPlaceDetails =
+                placeTitle to placeImageRes  // Сохранение деталей выбранного места
+            currentScreen = ScreenNames.DETAIL_SCREEN  // Переход на экран деталей
+        }
 
-@Composable
-fun SplashScreen() {
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(Brush.verticalGradient(listOf(Color(0xFF000000), Color(0xFF000000)))),
-        contentAlignment = Alignment.Center
-    ) {
-        Column(horizontalAlignment = Alignment.CenterHorizontally) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_travel_logo),
-                contentDescription = null,
-                modifier = Modifier.fillMaxSize()
-            )
+        ScreenNames.DETAIL_SCREEN -> selectedPlaceDetails?.let { (_, imageRes) ->
+            PlaceDetailScreen(
+                imageRes,
+                onBookingClicked = {
+                    currentScreen = ScreenNames.FIRST_SCREEN
+                })  // Показ деталей места и установка обработчика кнопки
         }
     }
-}
-
-
-@Preview
-@Composable
-fun SecondScreenPreview() {
-    SplashScreenApp()
 }
